@@ -1,0 +1,66 @@
+package com.example.springboot.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.springboot.ebookentity.EBookEntity;
+import com.example.springboot.service.EBookService;
+
+@RestController
+public class EBookController {
+
+    @Autowired
+    EBookService ebookService;
+
+    @PostMapping("/ebooks")
+    public ResponseEntity<EBookEntity> addEBook(@RequestBody EBookEntity ebook) {
+        EBookEntity addedEBook = ebookService.createEBook(ebook);
+        return new ResponseEntity<>(addedEBook, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/ebooks")
+    public ResponseEntity<List<EBookEntity>> getAllEBooks() {
+        List<EBookEntity> ebooks = ebookService.getAllEBooks();
+        return new ResponseEntity<>(ebooks, HttpStatus.OK);
+    }
+
+    @GetMapping("/ebooks/{id}")
+    public ResponseEntity<EBookEntity> getEBookById(@PathVariable("id") int id) {
+        EBookEntity ebook = ebookService.getEBookById(id);
+        if (ebook != null) {
+            return new ResponseEntity<>(ebook, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/ebooks/{id}")
+    public ResponseEntity<EBookEntity> updateEBook(@PathVariable("id") int id, @RequestBody EBookEntity ebook) {
+        EBookEntity updatedEBook = ebookService.updateEBook(id, ebook);
+        if (updatedEBook != null) {
+            return new ResponseEntity<>(updatedEBook, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/ebooks/{id}")
+    public ResponseEntity<Void> deleteEBook(@PathVariable("id") int id) {
+        boolean deleted = ebookService.deleteEBook(id);
+        if (deleted) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+}
